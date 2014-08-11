@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <sys/time.h>
 
-#include "mymct.h"
+#include "../include/mymct.h"
 
 const double kMicro = 1.0e-6;
 

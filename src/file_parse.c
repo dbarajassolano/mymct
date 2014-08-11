@@ -3,8 +3,8 @@
 #include <string.h>
 #include <getopt.h>
 
-#include "mymct.h"
-#include "file_parse.h"
+#include "../include/mymct.h"
+#include "../include/file_parse.h"
 
 static int parse_by_type(struct inputs *finputs, char *parval) {
 	
