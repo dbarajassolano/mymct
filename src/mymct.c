@@ -43,12 +43,18 @@ int ptrcheck(const char *message, const char *fname, int lineno, const char *fxn
 	return 0;
 }
 
-/* Get time of the day with millisecond precision.  
-   
-   Can be used for wall-clock timing.  Multiple versions of this function
-   exist on the Internet, albeit minor differences.  I got this one from
-   Scott Baden <baden@ucsd.edu>, and changed the error printing to
-   stderr */
+/* Get time of the day with millisecond precision.   
+   Can be used for wall-clock timing.
+
+   Modified from the function `getTime' of the `mint' project
+   https://sites.google.com/site/mintmodel/
+
+   Copyright (c) 2011, The Regents of the University of California.
+   Produced at the University of California, San Diego by Didem Unat
+   and Scott B. Baden and at the Simula Research Laboratory, Lysaker,
+   Norway by Xing Cai
+    
+   All rights reserved. */
 double getTime() {
 	
 	struct timeval TV;
