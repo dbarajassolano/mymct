@@ -80,7 +80,9 @@ int file_parse(char *fin, struct inputs *finputs)
 	i = 0;
 	while (getline(&line, &length, fp) != -1) {
 		i++;
-		N_read = sscanf(line, "%ms : %ms", &parname, &parval);
+		parname = malloc(1000);
+		parval  = malloc(1000);
+		N_read = sscanf(line, "%s : %s", parname, parval);
 		if (N_read < 2) {
 			fprintf(stderr, "Couldn't read parameter or value at input file, line %d\n", i);
 			goto ERROR_READ;
@@ -160,7 +162,7 @@ static struct option *getopt_long_option_create(char **_optargs, int *_Noptargs,
 	}
 	char cl_name[] = {'a', 0};
 	char *optargs = NULL;
-	optargs = malloc(Noptargs * 2 + 5);
+	optargs = malloc(Noptargs * 2 + 7); /* 7 corresponds to i:, o:, p: and the null terminator */
 	if (PTRCHECK("Malloc error", &optargs, NULL)) {
 		*_optargs = NULL;
 		return NULL;
@@ -175,7 +177,7 @@ static struct option *getopt_long_option_create(char **_optargs, int *_Noptargs,
 		}
 		i++;
 	}
-	strcat(optargs, "i:o:");
+	strcat(optargs, "i:o:p:");
 
 	/* Build the option struct */
 	struct option *long_opt = NULL;
@@ -211,6 +213,10 @@ static struct option *getopt_long_option_create(char **_optargs, int *_Noptargs,
 	long_opt[j + 1].val     = 'o';
 	long_opt[j + 1].has_arg = required_argument;
 	long_opt[j + 1].flag    = NULL;
+	long_opt[j + 1].name    = "optional";
+	long_opt[j + 1].val     = 'p';
+	long_opt[j + 1].has_arg = required_argument;
+	long_opt[j + 1].flag    = NULL;
 	long_opt[j + 2].name    = 0;
 	long_opt[j + 2].val     = 0;
 	long_opt[j + 2].has_arg = 0;
@@ -227,7 +233,7 @@ FREE_AT_ERROR:
 	return NULL;
 }
 
-int cl_parse(int argc, char **argv, struct inputs *finputs, char **_fin, char **_fout) {
+int cl_parse(int argc, char **argv, struct inputs *finputs, char **_fin, char **_fout, char **_fopt) {
 
 	char *optargs;
 	int Noptargs = 0;
@@ -235,7 +241,7 @@ int cl_parse(int argc, char **argv, struct inputs *finputs, char **_fin, char **
 	if (PTRCHECK("Couldn't create getopt_long options", &optargs, &long_opt, NULL))
 		return -1;
 	int i, c, i_opt = 0;
-	char *fin = NULL, *fout = NULL;
+	char *fin = NULL, *fout = NULL, *fopt = NULL;
 	while (1) {		
 		c = getopt_long(argc, argv, optargs, long_opt, &i_opt);
 		if (c == -1)
@@ -249,8 +255,11 @@ int cl_parse(int argc, char **argv, struct inputs *finputs, char **_fin, char **
 		case 'o':
 			fout = optarg;
 			break;
+		case 'p':
+			fopt = optarg;
+			break;
 		case '?':
-			break;			
+			break;
 		}		
 		i = 0;
 		while (finputs[i].name != 0) {
@@ -264,7 +273,7 @@ int cl_parse(int argc, char **argv, struct inputs *finputs, char **_fin, char **
 		}
 	}
 
-	*_fin = fin; *_fout = fout;
+	*_fin = fin; *_fout = fout; *_fopt = fopt;
 	free(optargs);
 	getopt_long_option_destroy(long_opt, Noptargs);
 	return 0;

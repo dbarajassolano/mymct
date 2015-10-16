@@ -23,6 +23,6 @@ struct inputs {
 /* Function prototypes */
 int file_parse(char *fin, struct inputs *finputs);
 void inputs_print(struct inputs *finputs);
-int cl_parse(int argc, char **argv, struct inputs *finputs, char **_fin, char **_fout);
+int cl_parse(int argc, char **argv, struct inputs *finputs, char **_fin, char **_fout, char **_fopt);
 
 #endif
